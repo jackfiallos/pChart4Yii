@@ -1,0 +1,80 @@
+=== pChart4Yii ===
+@author jackfiallos http://jackfiallos.com
+@original Jean-Damien POGOLOTTI http://pchart.sourceforge.net
+@version 0.0.1
+@link original version taken from http://pchart.sourceforge.net
+@copyright Copyright &copy; 2008 Jean-Damien POGOLOTTI
+@tags: yii framework, extension, pchart, graph
+@documentation: http://pchart.sourceforge.net/documentation.php
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 1,2,3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright &copy; 2008 Jean-Damien POGOLOTTI
+
+== Installation ==
+Extract under protected/extensions/pchartlib
+
+== How to use ==
+[code]
+Yii::import('application.extensions.pchartlib.pChart4Yii');
+Yii::import('application.extensions.pchartlib.pData4Yii');
+
+$DataSet = new pData4Yii;
+$DataSet->Data = array();
+$Test = new pChart4Yii(700,230);
+
+$Points = array(
+	'Serie1'=>array(1,4,3,2,3,3,2,1,0,7,4,3,2,3,3,5,1,0,7),
+	'Serie2'=>array(1,4,2,6,2,3,0,1,5,1,2,4,5,2,1,0,6,4,2)
+);
+$Series = array(
+	'Serie1'=>'January',
+	'Serie2'=>'Febrary'
+);
+
+foreach ($Points as $key=>$value){
+	$DataSet->AddPoint($value, $key);
+	$DataSet->SetSerieName($Series[$key], $key);
+}
+
+// Adding data
+$DataSet->AddAllSeries();
+$DataSet->SetAbsciseLabelSerie();		
+
+// Chart Presentation
+$Test->setFontProperties("fonts/tahoma.ttf",8);
+$Test->setGraphArea(50,30,585,200);
+$Test->drawFilledRoundedRectangle(7,7,693,223,5,233,233,233);
+$Test->drawRoundedRectangle(5,5,695,225,5,230,230,230);
+$Test->drawGraphArea(255,255,255,TRUE);
+$Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2);   
+$Test->drawGrid(4,TRUE,230,230,230,50);
+
+// Draw the 0 line
+$Test->setFontProperties("fonts/tahoma.ttf",6);
+$Test->drawTreshold(0,143,55,72,TRUE,TRUE);
+
+// Draw the cubic curve graph
+$Test->drawFilledCubicCurve($DataSet->GetData(),$DataSet->GetDataDescription(),.1,50);
+
+// Finish the graph
+$Test->setFontProperties("fonts/tahoma.ttf",8);
+$Test->drawLegend(600,30,$DataSet->GetDataDescription(),255,255,255);
+// output as file
+//$Test->Render(dirname(__FILE__).DIRECTORY_SEPARATOR."image.png");
+// output as text using base64 encode
+$Test->toBase64();
+// output onscreen with header('Content-type: image/png');
+return $Test->Stroke();
+[/code]
